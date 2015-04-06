@@ -39,6 +39,9 @@ Each company is scored on 6 performance metrics:
     * Shareholder Yield (Dividend Yield + Buyback Yield = equity returned
     to the investors)
     
+    TODO: Allow the script to continue if an interruption occurs 
+    
+    
 '''
 
 if __name__ == '__main__':
@@ -62,7 +65,7 @@ if __name__ == '__main__':
             # Populate buy back yield
             stock.updateCashFlow(Yahoo.getCashFlow(stockData[1]))
             print "Update cashFlow on " + stockData[1]
-                      
+            print stock.toString()
             stockList.append(stock)
             logging.debug("Updated stock ticker: " + stockData[1])  
               
@@ -84,13 +87,14 @@ if __name__ == '__main__':
     tenPercentLength = int(round(len(sortedRatings)/10.00))
     topTenPercentOfSortedRatings = sortedRatings[:tenPercentLength]
     sortedRatings = sorted(topTenPercentOfSortedRatings, key=lambda stock: stock.performanceHalfYear, reverse=True)
+    topTwentyFiveStocks = sortedRatings[:25]
 
     headerFile = open(os.path.join(os.path.dirname(__file__), 'templates/headerDiv.html' ), 'r+')
     footerFile = open(os.path.join(os.path.dirname(__file__), 'templates/footerDiv.html' ), 'r+')
         
     filteredFile = open('results.htm', 'w')
     filteredFile.write(headerFile.read())
-    for stock in sortedRatings:
+    for stock in topTwentyFiveStocks:
         filteredFile.write(stock.toHTML('ff'))
     filteredFile.write(footerFile.read())
     filteredFile.close()

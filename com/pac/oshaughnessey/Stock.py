@@ -1,5 +1,6 @@
 import jinja2
 import os
+from math import sqrt
 
 '''
 Created on February 6, 2014
@@ -57,6 +58,10 @@ class Stock(object):
     price = 0
 
     score = 0
+    
+    dilutedEarningsPerShare = 0
+    mrqBookValuePerShare = 0
+    grahamPrice = 0
 
 
     def __init__(self, params):
@@ -75,6 +80,12 @@ class Stock(object):
         self.dividendYield = self.convertToFloat(params[8],self.defaultLo)
         self.performanceHalfYear = self.convertToFloat(params[9],self.defaultLo)
         self.price = self.convertToFloat(params[10],self.defaultHi)
+        self.mrqBookValuePerShare = self.price/self.pb
+        self.dilutedEarningsPerShare = self.convertToFloat(params[11], 1.0)
+        if (self.dilutedEarningsPerShare > 0):
+            self.grahamPrice = sqrt(22.5 * self.dilutedEarningsPerShare * self.mrqBookValuePerShare)
+        else:
+            self.grahamPrice = -1.0
         
     def updateKeyStats(self,json):
         try:
@@ -83,7 +94,7 @@ class Stock(object):
             enterpriseValueEBITDA = str(self.defaultHi)
         except TypeError:
             enterpriseValueEBITDA = str(self.defaultHi)
-                
+        
         self.enterpriseValueEBITDA = self.convertToFloat(enterpriseValueEBITDA, self.defaultHi) 
          
     def updateCashFlow(self,json):
@@ -119,7 +130,10 @@ class Stock(object):
         output += 'price=' + str(self.price) + '\n'
         output += 'enterpriseValueEBITDA=' + str(self.enterpriseValueEBITDA) + '\n'
         output += 'salePurchaseOfStock=' + str(self.salePurchaseOfStock) + '\n'
-        output += 'shareholderYield=' + str(self.shareholderYield) + '\n'      
+        output += 'shareholderYield=' + str(self.shareholderYield) + '\n' 
+        output += 'mrqBookValuePerShare=' + str(self.mrqBookValuePerShare) + '\n' 
+        output += 'dilutedEarningsPerShare=' + str(self.dilutedEarningsPerShare) + '\n' 
+        output += 'grahamPrice=' + str(self.grahamPrice) + '\n'     
         return output
 
     def calculateScores(self):
@@ -151,7 +165,8 @@ class Stock(object):
                         "salePurchaseOfStock" :self.salePurchaseOfStock,
                         "performanceHalfYear": self.performanceHalfYear,
                         "price": self.price,
-                        "score": self.score}
+                        "score": self.score,
+                        "grahamPrice":self.grahamPrice}
         return template.render( templateVars )
 
 
