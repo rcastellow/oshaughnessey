@@ -1,5 +1,5 @@
 #!/bin/sh
 
-export PYTHONPATH=$PYTHONPATH:./com/pac/cryptofx/algorithm:/com/pac/cryptofx/exchange/campx:/com/pac/cryptofx/exchange/cryptsy
+export PYTHONPATH=$PYTHONPATH:./com/pac/oshaughnessey/algorithm:./com/pac/oshaughnessey/stockdata:./com/pac/oshaughnessey/templates
 
 python ./com/pac/oshaughnessey/startOS.py
